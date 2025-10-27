@@ -1,266 +1,473 @@
-# 🍎 Hortifrut - Sistema de Gestão Cloud
+===============================================================================
+                    HORTIFRUT - SISTEMA DE GESTÃO CLOUD
+===============================================================================
 
-Projeto de arquitetura em nuvem desenvolvido como trabalho acadêmico, implementando um sistema completo de gestão de hortifruti com microserviços, MicroFrontEnd e Azure Functions.
+Sistema distribuído para gestão de produtos e pedidos de hortifruti, 
+desenvolvido como projeto acadêmico da disciplina de Arquitetura em Nuvem. 
+Implementa arquitetura de microserviços completa com MicroFrontEnd, 
+Backend for Frontend (BFF), e Azure Functions.
 
-## 📋 Índice
+Status: 100% funcional
+Azure Functions: operacional
+MongoDB Atlas: connected
+Azure SQL: connected
 
-- [Sobre o Projeto](#sobre-o-projeto)
-- [Arquitetura](#arquitetura)
-- [Tecnologias Utilizadas](#tecnologias-utilizadas)
-- [Pré-requisitos](#pré-requisitos)
-- [Como Executar](#como-executar)
-- [Endpoints da API](#endpoints-da-api)
-- [Estrutura do Projeto](#estrutura-do-projeto)
-- [Equipe](#equipe)
+===============================================================================
+                              ÍNDICE
+===============================================================================
 
----
+1. Sobre o Projeto
+2. Arquitetura
+3. Tecnologias Utilizadas
+4. Pré-requisitos
+5. Como Executar
+6. Endpoints da API
+7. Azure Functions
+8. Estrutura do Projeto
+9. Equipe
 
-## 📖 Sobre o Projeto
+===============================================================================
+                         SOBRE O PROJETO
+===============================================================================
 
-Sistema distribuído para gestão de produtos e pedidos de hortifruti, implementando:
+Sistema completo de gestão para hortifruti que demonstra a implementação 
+prática de conceitos avançados de arquitetura em nuvem.
 
-- **Arquitetura de Microserviços**: Serviços independentes e escaláveis
-- **BFF (Backend for Frontend)**: Camada de agregação e autenticação
-- **MicroFrontEnd**: Interface web moderna em React
-- **Banco de Dados Híbrido**: MongoDB Atlas (NoSQL) + Azure SQL Database (SQL)
-- **Azure Functions**: Processamento serverless de eventos
-- **Containerização**: Todos os serviços dockerizados
+CARACTERÍSTICAS PRINCIPAIS:
 
----
+- Arquitetura de Microserviços: Serviços independentes e escaláveis
+- Database Polyglot: MongoDB (NoSQL) + Azure SQL (SQL relacional)
+- BFF Pattern: Backend for Frontend com agregação de dados
+- Serverless Computing: Azure Functions para processamento assíncrono
+- MicroFrontEnd: Interface web moderna em React
+- Autenticação JWT: Segurança e autorização
+- Containerização: Todos os serviços dockerizados
 
-## 🏗️ Arquitetura
-;;
+===============================================================================
+                            ARQUITETURA
+===============================================================================
 
-## 🚀 Tecnologias Utilizadas
+FLUXO DE DADOS:
 
-### Backend
-- **Node.js** v18.17.1
-- **Express.js** - Framework web
-- **JWT** - Autenticação e autorização
-- **Mongoose** - ODM para MongoDB
-- **MSSQL** - Driver para Azure SQL
+    MicroFrontEnd (React)
+    http://localhost:5173
+    • Login com JWT
+    • Dashboard agregado
+    • Interface responsiva
+           |
+           v
+    BFF Service (Node.js + JWT)
+    http://localhost:4000
+    • Autenticação e autorização
+    • Agregação de dados
+    • Proxy reverso
+           |
+    +------+------+----------+----------+
+    |      |      |          |          |
+    v      v      v          v          v
+Product Order Azure    Azure
+Service Service Func1  Func2
+:3001   :3002  (Event) (Notification)
+   |      |
+   v      v
+MongoDB  Azure SQL
+Atlas    Database
+(NoSQL)  (SQL)
 
-### Frontend
-- **React** 18
-- **Vite** 4 - Build tool
-- **Axios** - Cliente HTTP
+===============================================================================
+                      TECNOLOGIAS UTILIZADAS
+===============================================================================
 
-### Banco de Dados
-- **MongoDB Atlas** - Produtos (NoSQL)
-- **Azure SQL Database** - Pedidos (SQL relacional)
+BACKEND:
+- Node.js v18.17.1 - Runtime JavaScript
+- Express.js - Framework web minimalista
+- JWT (jsonwebtoken) - Autenticação e autorização
+- Mongoose - ODM para MongoDB
+- MSSQL - Driver para Azure SQL Server
+- Axios - Cliente HTTP
+- Cors - Cross-Origin Resource Sharing
+- Dotenv - Gerenciamento de variáveis de ambiente
 
-### DevOps
-- **Docker** - Containerização
-- **Git/GitHub** - Controle de versão
-- **Azure Functions** - Serverless computing
+FRONTEND:
+- React 18 - Biblioteca UI
+- Vite 4 - Build tool e dev server
+- Axios - Cliente HTTP
+- LocalStorage - Gestão de sessão
 
----
+BANCO DE DADOS:
+- MongoDB Atlas
+  Cluster: hortifrut-cluster
+  Região: São Paulo, Brasil
+  Collection: products
 
-## ✅ Pré-requisitos
+- Azure SQL Database
+  Server: hortifruti-sql-server-pjbl
+  Database: hortifruti-orders
+  Região: Brazil South
 
-Antes de começar, você precisa ter instalado:
+CLOUD SERVICES:
+- Azure Functions
+  Function App: hortifruti-functions-pjbl
+  Runtime: Node.js 18
+  Região: Brazil South
 
-- [Node.js](https://nodejs.org/) v18.17+
-- [npm](https://www.npmjs.com/) v9.6+
-- [Git](https://git-scm.com/)
-- [Docker](https://www.docker.com/) (opcional, para containerização)
+DEVOPS:
+- Docker - Containerização
+- Git/GitHub - Controle de versão
+- npm - Gerenciador de pacotes
 
----
+===============================================================================
+                          PRÉ-REQUISITOS
+===============================================================================
 
-## 🔧 Como Executar
+- Node.js v18.17+
+- npm v9.6+
+- Git
+- Docker (opcional)
 
-### 1. Clonar o Repositório
+===============================================================================
+                          COMO EXECUTAR
+===============================================================================
+
+1. CLONAR O REPOSITÓRIO
+
 git clone https://github.com/niimf/hortifrut-pjbl.git
 cd hortifrut-pjbl
 
-### 2. Configurar Variáveis de Ambiente
+2. CONFIGURAR VARIÁVEIS DE AMBIENTE
 
-Crie arquivos `.env` em cada serviço:
-
-**product-service/.env:**
-MONGODB_URI=sua_connection_string_mongodb
+product-service/.env:
+MONGODB_URI=mongodb+srv://usuario:senha@hortifrut-cluster.tv4fpme.mongodb.net/hortifrut
 PORT=3001
 
-**order-service/.env:**
-AZURE_SQL_CONN=sua_connection_string_azure_sql
+order-service/.env:
+AZURE_SQL_SERVER=hortifruti-sql-server-pjbl.database.windows.net
+AZURE_SQL_DATABASE=hortifruti-orders
+AZURE_SQL_USER=adminhorti
+AZURE_SQL_PASSWORD=sua_senha
 PORT=3002
 
-**bff-service/.env:**
+bff-service/.env:
 PORT=4000
-JWT_SECRET=sua_chave_secreta
+JWT_SECRET=hortifrut_secret_key_2025
 PRODUCT_SERVICE_URL=http://localhost:3001
 ORDER_SERVICE_URL=http://localhost:3002
-FUNCTION_BASE_URL=url_das_azure_functions
+FUNCTION_BASE_URL=https://hortifruti-functions-pjbl.azurewebsites.net
 
-### 3. Instalar Dependências e Executar
+3. INSTALAR DEPENDÊNCIAS E EXECUTAR
 
-**Terminal 1 - Product Service:**
+TERMINAL 1 - Product Service:
 cd product-service
 npm install
 npm start
 
-**Terminal 2 - Order Service:**
+TERMINAL 2 - Order Service:
 cd order-service
 npm install
 npm start
 
-**Terminal 3 - BFF Service:**
+TERMINAL 3 - BFF Service:
 cd bff-service
 npm install
 npm start
 
-**Terminal 4 - MicroFrontEnd:**
+TERMINAL 4 - MicroFrontEnd:
 cd microfrontend
 npm install
 npm run dev
 
-### 4. Acessar a Aplicação
+4. ACESSAR A APLICAÇÃO
 
-Abra o navegador em: [**http://localhost:5173**](http://localhost:5173)
+Abra o navegador em: http://localhost:5173
 
----
+Credenciais de teste:
+Username: qualquer nome (ex: admin, teste, etc.)
+O sistema gerará um token JWT automaticamente
 
-## 🔑 Endpoints da API
+===============================================================================
+                        ENDPOINTS DA API
+===============================================================================
 
-### Autenticação
+AUTENTICAÇÃO
 
+Login:
 POST /auth/login
 Content-Type: application/json
+Body: {"username": "seu_usuario"}
 
+Resposta:
 {
-"username": "seu_usuario"
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "message": "Login successful"
 }
 
-**Resposta:**
-{
-"token": "eyJhbGc...",
-"message": "Login successful"
-}
+PRODUTOS (via BFF)
 
-### Produtos (via BFF)
+Todos os endpoints requerem header: Authorization: Bearer TOKEN
 
-GET /api/products # Listar todos
-POST /api/products # Criar produto
-GET /api/products/:id # Buscar por ID
-PUT /api/products/:id # Atualizar
-DELETE /api/products/:id # Deletar
+GET    /api/products           - Listar todos os produtos
+POST   /api/products           - Criar novo produto
+GET    /api/products/:id       - Buscar produto por ID
+PUT    /api/products/:id       - Atualizar produto
+DELETE /api/products/:id       - Deletar produto
 
-**Exemplo - Criar Produto:**
-curl -X POST http://localhost:4000/api/products
--H "Authorization: Bearer SEU_TOKEN"
--H "Content-Type: application/json"
--d '{"name":"Maçã","price":5.50,"category":"Frutas","stock":100}'
+Exemplo - Criar Produto:
+curl -X POST http://localhost:4000/api/products \
+  -H "Authorization: Bearer SEU_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Maçã Fuji",
+    "price": 8.90,
+    "category": "Frutas",
+    "stock": 100
+  }'
 
-### Pedidos (via BFF)
+PEDIDOS (via BFF)
 
-GET /api/orders # Listar todos
-POST /api/orders # Criar pedido
-GET /api/orders/:id # Buscar por ID
-PUT /api/orders/:id # Atualizar
-DELETE /api/orders/:id # Deletar
+GET    /api/orders             - Listar todos os pedidos
+POST   /api/orders             - Criar novo pedido
+GET    /api/orders/:id         - Buscar pedido por ID
+PUT    /api/orders/:id         - Atualizar pedido
+DELETE /api/orders/:id         - Deletar pedido
 
-### Dashboard Agregado
+Exemplo - Criar Pedido:
+curl -X POST http://localhost:4000/api/orders \
+  -H "Authorization: Bearer SEU_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "customerName": "Maria Silva",
+    "total": 250.00
+  }'
+
+DASHBOARD AGREGADO
 
 GET /api/dashboard
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3R1c2VyIiwiaWF0IjoxNzYxNTI3MzMzLCJleHAiOjE3NjE1MzQ1MzN9.kPv_cmHI_-b_aWcbPDUgM6CEhryi-mma4dX3jEpJ_iA"
+Authorization: Bearer TOKEN
 
-**Resposta:**
+Resposta:
 {
-"products": [...],
-"orders": [...],
-"functionStatus": {"status": "ok"}
+  "products": [...],
+  "orders": [...],
+  "functionStatus": {
+    "ok": true,
+    "message": "notification-service up"
+  }
 }
 
----
+===============================================================================
+                         AZURE FUNCTIONS
+===============================================================================
 
-## 📁 Estrutura do Projeto
+FUNCTION 1: Event Processor
+
+Endpoint: POST /api/event-processor
+URL: https://hortifruti-functions-pjbl.azurewebsites.net/api/event-processor
+
+Função: Processa eventos de criação de pedidos de forma assíncrona
+
+Exemplo de uso direto:
+curl -X POST https://hortifruti-functions-pjbl.azurewebsites.net/api/event-processor \
+  -H "Content-Type: application/json" \
+  -d '{"orderId":123,"customer":"João Silva"}'
+
+Exemplo via BFF (autenticado):
+curl -X POST http://localhost:4000/api/orders/event \
+  -H "Authorization: Bearer SEU_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"orderId":123,"customer":"João Silva"}'
+
+Resposta esperada:
+{
+  "ok": true,
+  "id": "68ffef04b9bc96cc4624f2dcb"
+}
+
+FUNCTION 2: Notification Service
+
+Endpoint: GET /api/notification-service
+URL: https://hortifruti-functions-pjbl.azurewebsites.net/api/notification-service
+
+Função: Serviço de notificações e health check das Azure Functions
+
+Exemplo de uso:
+curl https://hortifruti-functions-pjbl.azurewebsites.net/api/notification-service?ping=true
+
+Resposta esperada:
+{
+  "ok": true,
+  "message": "notification-service up"
+}
+
+===============================================================================
+                      ESTRUTURA DO PROJETO
+===============================================================================
 
 hortifrut-pjbl/
-├── product-service/ # Microserviço de Produtos
-│ ├── src/
-│ │ ├── config/ # Configurações
-│ │ ├── models/ # Modelos MongoDB
-│ │ ├── routes/ # Rotas da API
-│ │ └── index.js # Servidor
-│ ├── Dockerfile
-│ └── package.json
+├── product-service/              Microserviço de Produtos
+│   ├── src/
+│   │   ├── config/
+│   │   │   └── db.js            Configuração MongoDB
+│   │   ├── models/
+│   │   │   └── Product.js       Schema Mongoose
+│   │   ├── routes/
+│   │   │   └── products.js      Rotas CRUD
+│   │   └── index.js             Servidor Express
+│   ├── .env
+│   ├── Dockerfile
+│   └── package.json
 │
-├── order-service/ # Microserviço de Pedidos
-│ ├── src/
-│ │ ├── config/ # Configurações
-│ │ ├── db/ # Schema SQL
-│ │ ├── routes/ # Rotas da API
-│ │ └── index.js # Servidor
-│ ├── Dockerfile
-│ └── package.json
+├── order-service/                Microserviço de Pedidos
+│   ├── src/
+│   │   ├── config/
+│   │   │   └── db.js            Configuração Azure SQL
+│   │   ├── db/
+│   │   │   └── schema.sql       Schema SQL
+│   │   ├── routes/
+│   │   │   └── orders.js        Rotas CRUD
+│   │   └── index.js             Servidor Express
+│   ├── .env
+│   ├── Dockerfile
+│   └── package.json
 │
-├── bff-service/ # Backend for Frontend
-│ ├── src/
-│ │ ├── middleware/ # Autenticação JWT
-│ │ ├── routes/ # Rotas (auth + api)
-│ │ └── index.js # Servidor
-│ ├── Dockerfile
-│ └── package.json
+├── bff-service/                  Backend for Frontend
+│   ├── src/
+│   │   ├── middleware/
+│   │   │   └── auth.js          Middleware JWT
+│   │   ├── routes/
+│   │   │   ├── auth.routes.js   Rotas de autenticação
+│   │   │   └── api.routes.js    Proxy e agregação
+│   │   └── index.js             Servidor Express
+│   ├── .env
+│   ├── Dockerfile
+│   └── package.json
 │
-├── microfrontend/ # Interface Web
-│ ├── src/
-│ │ ├── pages/ # Páginas (Login, Dashboard)
-│ │ ├── services/ # Cliente API
-│ │ └── App.jsx # Componente raiz
-│ └── package.json
+├── microfrontend/                Interface Web React
+│   ├── src/
+│   │   ├── pages/
+│   │   │   ├── Login.jsx        Página de login
+│   │   │   └── Dashboard.jsx    Dashboard principal
+│   │   ├── services/
+│   │   │   └── api.js           Cliente API
+│   │   ├── App.jsx              Componente raiz
+│   │   └── main.jsx             Entry point
+│   ├── index.html
+│   └── package.json
 │
-└── README.md # Este arquivo
+└── README.md                     Este arquivo
 
----
+===============================================================================
+                    FUNCIONALIDADES IMPLEMENTADAS
+===============================================================================
 
-## 👥 Equipe
+BACKEND:
+✓ 3 Microserviços independentes (Product, Order, BFF)
+✓ 2 Azure Functions serverless
+✓ Autenticação JWT completa
+✓ Agregação de dados de múltiplas fontes
+✓ Proxy reverso no BFF
+✓ CRUD completo de produtos
+✓ CRUD completo de pedidos
+✓ Health checks
 
-- **Nicole Fatuch** - [@niimf](https://github.com/niimf)
-- **Jose Gabriel Kojo**
-- **Larissa Nichetti**
-- **Felipe Brugnera**
-- **Maria Fernanda**
+BANCO DE DADOS:
+✓ MongoDB Atlas (NoSQL) - 5 produtos cadastrados
+✓ Azure SQL Database (SQL) - 2 pedidos cadastrados
+✓ Schemas definidos e validados
+✓ Conexões seguras e estáveis
 
----
-## 📝 Licença
+FRONTEND:
+✓ MicroFrontEnd em React
+✓ Dashboard agregado em tempo real
+✓ Autenticação e gestão de sessão
+✓ Interface responsiva
+✓ Indicadores visuais de status
+✓ Listagem de produtos e pedidos
+✓ Logout funcional
 
-Este projeto foi desenvolvido para fins acadêmicos.
+CLOUD & DEVOPS:
+✓ Dockerfiles para todos os serviços
+✓ Código versionado no GitHub
+✓ Variáveis de ambiente configuradas
+✓ Firewall e segurança configurados
+✓ APIs RESTful testadas
+✓ Documentação completa
 
----
+===============================================================================
+                          COMO TESTAR
+===============================================================================
 
-## 🎯 Funcionalidades Implementadas
+TESTE COMPLETO VIA TERMINAL:
 
-- [x] MicroFrontEnd React
-- [x] 2 Microserviços (Products + Orders)
-- [x] BFF com autenticação JWT
-- [x] Agregação de dados de múltiplas fontes
-- [x] MongoDB Atlas (NoSQL)
-- [x] Azure SQL Database (SQL)
-- [x] Dockerfiles para todos os serviços
-- [x] API RESTful completa
-- [ ] Azure Functions (em desenvolvimento)
-- [ ] Deploy em produção
+# 1. Login
+TOKEN=$(curl -s -X POST http://localhost:4000/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"teste"}' | jq -r '.token')
 
----
+# 2. Listar produtos
+curl http://localhost:4000/api/products \
+  -H "Authorization: Bearer $TOKEN"
 
-## 📸 Screenshots
+# 3. Listar pedidos
+curl http://localhost:4000/api/orders \
+  -H "Authorization: Bearer $TOKEN"
 
-### Dashboard Principal
-![Dashboard](docs/dashboard.png)
+# 4. Dashboard agregado
+curl http://localhost:4000/api/dashboard \
+  -H "Authorization: Bearer $TOKEN"
 
-### Tela de Login
-![Login](docs/login.png)
+# 5. Criar pedido via Azure Function
+curl -X POST http://localhost:4000/api/orders/event \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"orderId":999,"customer":"Teste"}'
 
----
+TESTE VIA INTERFACE WEB:
 
-## 🤝 Como Contribuir
+1. Acesse: http://localhost:5173
+2. Faça login com qualquer username
+3. Visualize o dashboard com:
+   - 5 produtos do MongoDB
+   - 2 pedidos do Azure SQL
+   - Status "notification-service up" das Functions
 
-1. Faça um fork do projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/NovaFeature`)
-3. Commit suas mudanças (`git commit -m 'Adiciona nova feature'`)
-4. Push para a branch (`git push origin feature/NovaFeature`)
-5. Abra um Pull Request
+===============================================================================
+                              EQUIPE
+===============================================================================
 
----
+Nicole Fatuch - @niimf - Backend, BFF, MicroFrontEnd
+Jose Gabriel Kojo - Azure Functions, Infraestrutura Azure
+Larissa Nichetti - Atualização do documento Arc 42 e diagramas
+Felipe Brugnera -
+Maria Fernanda -
 
-⭐️ Desenvolvido com 💚 para PUC-PR
+
+Instituição: PUC-PR
+Disciplina: Cloud
+Período: 6o | 2025.2
+
+===============================================================================
+                        STATUS DO PROJETO
+===============================================================================
+
+Progresso: 100% COMPLETO
+
+✓ Infraestrutura cloud configurada
+✓ Microserviços implementados
+✓ Azure Functions integradas e operacionais
+✓ Frontend funcional
+✓ Documentação completa
+✓ Testes realizados e validados
+✓ Todos os requisitos atendidos
+
+===============================================================================
+                            LINKS ÚTEIS
+===============================================================================
+
+Repositório: https://github.com/niimf/hortifrut-pjbl
+MongoDB Atlas: https://cloud.mongodb.com
+Azure Portal: https://portal.azure.com
+Azure Functions: https://hortifruti-functions-pjbl.azurewebsites.net
+
+===============================================================================
+
+Desenvolvido com 💚 para PUC-PR | 2025
