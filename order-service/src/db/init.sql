@@ -1,0 +1,8 @@
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Orders')
+CREATE TABLE Orders(
+  id INT IDENTITY(1,1) PRIMARY KEY,
+  customerName NVARCHAR(100) NOT NULL,
+  total DECIMAL(10,2) NOT NULL,
+  status NVARCHAR(50) DEFAULT 'pending',
+  createdAt DATETIME2 DEFAULT SYSUTCDATETIME()
+);
