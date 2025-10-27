@@ -60,8 +60,16 @@ function Dashboard() {
         </div>
 
         <div style={{ border: '1px solid #ccc', padding: '15px', borderRadius: '8px', gridColumn: 'span 2' }}>
-          <h2>⚡ Status Azure Functions</h2>
-          <p>Status: <strong>{data.functionStatus.status || 'unavailable'}</strong></p>
+            <h2>⚡ Status Azure Functions</h2>
+            <p>Status: <strong>
+                {data.functionStatus.ok ? 
+                    (data.functionStatus.message || 'available') : 
+                    'unavailable'
+                }
+            </strong></p>
+            {data.functionStatus.ok && (
+                <p style={{ color: 'green', marginTop: '5px' }}>✅ Functions operacionais</p>
+            )}
         </div>
 
       </div>
