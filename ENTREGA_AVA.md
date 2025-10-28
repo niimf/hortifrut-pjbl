@@ -25,9 +25,11 @@
 ### 🐳 Docker Hub
 
 **Dockerfiles disponíveis em:**
-- `product-service/Dockerfile`
-- `order-service/Dockerfile`
-- `bff-service/Dockerfile`
+![DockerHub](docs\evidencias\Docker_Hub.png)
+
+**Link:** https://hub.docker.com/r/niimf/hortifrut-product-service
+**Link:** https://hub.docker.com/r/niimf/hortifrut-order-service
+**Link:** https://hub.docker.com/r/niimf/hortifrut-bff-service
 
 ## 📸 Evidências de Funcionamento
 
