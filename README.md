@@ -1,6 +1,4 @@
-===============================================================================
                     HORTIFRUT - SISTEMA DE GESTÃO CLOUD
-===============================================================================
 
 Sistema distribuído para gestão de produtos e pedidos de hortifruti, 
 desenvolvido como projeto acadêmico da disciplina de Arquitetura em Nuvem. 
@@ -12,9 +10,7 @@ Azure Functions: operacional
 MongoDB Atlas: connected
 Azure SQL: connected
 
-===============================================================================
                               ÍNDICE
-===============================================================================
 
 1. Sobre o Projeto
 2. Arquitetura
@@ -26,9 +22,7 @@ Azure SQL: connected
 8. Estrutura do Projeto
 9. Equipe
 
-===============================================================================
                          SOBRE O PROJETO
-===============================================================================
 
 Sistema completo de gestão para hortifruti que demonstra a implementação 
 prática de conceitos avançados de arquitetura em nuvem.
@@ -43,9 +37,7 @@ CARACTERÍSTICAS PRINCIPAIS:
 - Autenticação JWT: Segurança e autorização
 - Containerização: Todos os serviços dockerizados
 
-===============================================================================
                             ARQUITETURA
-===============================================================================
 
 FLUXO DE DADOS:
 
@@ -74,9 +66,7 @@ MongoDB  Azure SQL
 Atlas    Database
 (NoSQL)  (SQL)
 
-===============================================================================
-                      TECNOLOGIAS UTILIZADAS
-===============================================================================
+                      TECNOLOGIAS UTILIZADAS=
 
 BACKEND:
 - Node.js v18.17.1 - Runtime JavaScript
@@ -116,18 +106,14 @@ DEVOPS:
 - Git/GitHub - Controle de versão
 - npm - Gerenciador de pacotes
 
-===============================================================================
                           PRÉ-REQUISITOS
-===============================================================================
 
 - Node.js v18.17+
 - npm v9.6+
 - Git
 - Docker (opcional)
 
-===============================================================================
                           COMO EXECUTAR
-===============================================================================
 
 1. CLONAR O REPOSITÓRIO
 
@@ -184,9 +170,7 @@ Credenciais de teste:
 Username: qualquer nome (ex: admin, teste, etc.)
 O sistema gerará um token JWT automaticamente
 
-===============================================================================
                         ENDPOINTS DA API
-===============================================================================
 
 AUTENTICAÇÃO
 
@@ -254,9 +238,7 @@ Resposta:
   }
 }
 
-===============================================================================
                          AZURE FUNCTIONS
-===============================================================================
 
 FUNCTION 1: Event Processor
 
@@ -298,9 +280,7 @@ Resposta esperada:
   "message": "notification-service up"
 }
 
-===============================================================================
                       ESTRUTURA DO PROJETO
-===============================================================================
 
 hortifrut-pjbl/
 ├── product-service/              Microserviço de Produtos
@@ -355,9 +335,7 @@ hortifrut-pjbl/
 │
 └── README.md                     Este arquivo
 
-===============================================================================
                     FUNCIONALIDADES IMPLEMENTADAS
-===============================================================================
 
 BACKEND:
 ✓ 3 Microserviços independentes (Product, Order, BFF)
@@ -392,9 +370,7 @@ CLOUD & DEVOPS:
 ✓ APIs RESTful testadas
 ✓ Documentação completa
 
-===============================================================================
                           COMO TESTAR
-===============================================================================
 
 TESTE COMPLETO VIA TERMINAL:
 
@@ -430,9 +406,7 @@ TESTE VIA INTERFACE WEB:
    - 2 pedidos do Azure SQL
    - Status "notification-service up" das Functions
 
-===============================================================================
                               EQUIPE
-===============================================================================
 
 Nicole Fatuch - @niimf - Backend, BFF, MicroFrontEnd
 Jose Gabriel Kojo - Azure Functions, Infraestrutura Azure
@@ -445,9 +419,7 @@ Instituição: PUC-PR
 Disciplina: Cloud
 Período: 6o | 2025.2
 
-===============================================================================
                         STATUS DO PROJETO
-===============================================================================
 
 Progresso: 100% COMPLETO
 
@@ -459,15 +431,12 @@ Progresso: 100% COMPLETO
 ✓ Testes realizados e validados
 ✓ Todos os requisitos atendidos
 
-===============================================================================
                             LINKS ÚTEIS
-===============================================================================
 
 Repositório: https://github.com/niimf/hortifrut-pjbl
 MongoDB Atlas: https://cloud.mongodb.com
 Azure Portal: https://portal.azure.com
 Azure Functions: https://hortifruti-functions-pjbl.azurewebsites.net
 
-===============================================================================
 
 Desenvolvido com 💚 para PUC-PR | 2025
