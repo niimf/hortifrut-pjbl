@@ -9,7 +9,8 @@
 
 ## 📋 Sobre o Projeto
 
-Sistema de microserviços para gestão de produtos e pedidos de uma empresa de hortifrutigranjeiros, implementando **Clean Architecture**, **Vertical Slice Architecture** e padrões de arquitetura de software modernos.
+Sistema de microserviços para gestão de produtos e pedidos de uma empresa de hortifrutigranjeiros, implementando **Clean Architecture**, **Vertical Slice Architecture**, **Event-Driven Architecture** e **Serverless Computing** com padrões de arquitetura de software modernos.
+
 
 ---
 
@@ -37,7 +38,21 @@ O projeto é composto por **3 microserviços independentes**:
 │ (porta: 3001) │ │ (porta: 3002) │
 │ - CRUD de Produtos │ │ - CRUD de Pedidos │
 │ - MongoDB Atlas │ │ - Azure SQL Database │
-└───────────────────────┘ └─────────────────────────┘
+└───────────────────────┘ └───────────┬─────────────┘
+│
+┌───────────┴──────────┐
+│ EVENT PUBLISHER │
+│ (Event-Driven) │
+└──────────┬───────────┘
+│
+↓
+┌────────────────────────────┐
+│ AZURE FUNCTION │
+│ (Serverless - porta 7071) │
+│ - Processa eventos │
+│ - Envia emails │
+│ - Atualiza analytics │
+└────────────────────────────┘
 
 ---
 
@@ -83,6 +98,7 @@ features/
 │ ├── update/ → Feature completa de atualização
 │ └── delete/ → Feature completa de deleção
 
+
 **Benefícios:**
 - ✅ Mudanças isoladas por feature
 - ✅ Deploy independente
@@ -91,14 +107,67 @@ features/
 
 ---
 
+## 📡 Event-Driven Architecture
+
+### **Como Funciona:**
+
+1. **Order-Service** cria/atualiza/deleta um pedido
+2. **EventPublisher** publica evento (ORDER_CREATED, ORDER_UPDATED, ORDER_DELETED)
+3. **EventListener** captura evento
+4. **EventListener** envia para Azure Function via HTTP
+5. **Azure Function** processa evento de forma assíncrona
+
+### **Exemplo de Evento:**
+
+{
+"type": "ORDER_CREATED",
+"timestamp": "2025-11-10T18:32:57.963Z",
+"payload": {
+"orderId": 8,
+"customerName": "Maria Silva",
+"total": 250.00,
+"status": "pending"
+}
+}
+
+### **Vantagens:**
+- ✅ **Desacoplamento:** Serviços não dependem diretamente um do outro
+- ✅ **Escalabilidade:** Processa eventos de forma assíncrona
+- ✅ **Resiliência:** Falha na Azure Function não impede criação de pedidos
+- ✅ **Extensibilidade:** Fácil adicionar novos listeners
+
+---
+
+## ☁️ Serverless Computing (Azure Functions)
+
+### **OrderCreatedHandler Function**
+
+**Trigger:** HTTP POST  
+**Porta Local:** 7071  
+**Produção:** Azure Cloud
+
+**Responsabilidades:**
+- Escutar eventos de pedidos
+- Enviar emails de confirmação
+- Atualizar dashboards de analytics
+- Registrar logs de auditoria
+
+**Vantagens do Serverless:**
+- 💰 **Pay-per-execution:** Paga apenas quando executa
+- 🚀 **Auto-scaling:** Escala automaticamente
+- 🛠️ **Zero infraestrutura:** Gerenciado pela Azure
+- ⚡ **Alta disponibilidade:** 99.95% SLA
+
+---
+
 ## 🧪 Testes de Arquitetura
 
 Cada microserviço possui **testes automatizados** que validam as regras arquiteturais:
 
 Executar testes em cada serviço
-cd product-service && npm test
-cd order-service && npm test
-cd bff-service && npm test
+cd product-service && npm test # 7 testes
+cd order-service && npm test # 7 testes
+cd bff-service && npm test # 7 testes
 
 **Regras validadas:**
 1. ✅ Domain não depende de outras camadas
@@ -142,6 +211,8 @@ hortifrut-pjbl/
 │ │ ├── domain/
 │ │ ├── application/
 │ │ ├── infrastructure/
+│ │ │ ├── database/
+│ │ │ └── events/ # ⭐ Event Publisher & Listener
 │ │ ├── presentation/
 │ │ ├── features/
 │ │ └── index.js
@@ -165,6 +236,15 @@ hortifrut-pjbl/
 │ ├── Dockerfile
 │ └── package.json
 │
+├── azure-function-order-processor/ # ⭐ Azure Function (Serverless)
+│ ├── OrderCreatedHandler/
+│ │ ├── function.json
+│ │ └── index.js
+│ ├── host.json
+│ ├── local.settings.json
+│ ├── ARCHITECTURE.md
+│ └── package.json
+│
 ├── frontend/ # Frontend React
 │ ├── src/
 │ ├── Dockerfile
@@ -182,6 +262,7 @@ hortifrut-pjbl/
 - Docker (opcional)
 - MongoDB Atlas (configurado)
 - Azure SQL Database (configurado)
+- Azure Functions Core Tools
 
 ### **Opção 1: Execução Local**
 
@@ -189,6 +270,7 @@ hortifrut-pjbl/
 cd product-service && npm install
 cd ../order-service && npm install
 cd ../bff-service && npm install
+cd ../azure-function-order-processor && npm install
 cd ../frontend && npm install
 
 #### **2. Configurar variáveis de ambiente:**
@@ -210,26 +292,34 @@ JWT_SECRET=hortifrut_secret_key_2025
 PRODUCT_SERVICE_URL=http://localhost:3001
 ORDER_SERVICE_URL=http://localhost:3002
 
-#### **3. Iniciar serviços (4 terminais):**
+#### **3. Iniciar serviços (5 terminais):**
 
-**Terminal 1:**
+**Terminal 1 - Azure Function:**
+cd azure-function-order-processor
+func start
+
+**Terminal 2 - Product Service:**
 cd product-service
 npm start
 
-**Terminal 2:**
+**Terminal 3 - Order Service:**
 cd order-service
 npm start
 
-
-**Terminal 3:**
+**Terminal 4 - BFF Service:**
 cd bff-service
 npm start
+
+**Terminal 5 - Frontend:**
+cd frontend
+npm run dev
 
 #### **4. Acessar:**
 - Frontend: http://localhost:5173
 - BFF API: http://localhost:4000
 - Product Service: http://localhost:3001
 - Order Service: http://localhost:3002
+- Azure Function: http://localhost:7071
 
 ---
 
@@ -277,15 +367,58 @@ cd order-service && npm test
 BFF Service
 cd bff-service && npm test
 
-### **Teste de Integração Manual:**
-1. Fazer login
-TOKEN=$(curl -s -X POST http://localhost:4000/auth/login
--H "Content-Type: application/json"
--d '{"username":"admin"}' | jq -r '.token')
+### **Teste de Event-Driven + Azure Function:**
 
-2. Buscar dashboard agregado
-curl http://localhost:4000/api/dashboard
--H "Authorization: Bearer $TOKEN"
+**1. Iniciar Azure Function e Order Service**
+
+**2. Criar pedido:**
+curl -X POST http://localhost:3002/orders
+-H "Content-Type: application/json"
+-d '{"customerName":"Test Event","total":150.00,"status":"pending"}'
+
+**3. Verificar logs:**
+- **Order-Service:** Deve mostrar "✅ Azure Function Response: Event processed successfully"
+- **Azure Function:** Deve mostrar "🚀 Azure Function triggered: OrderCreatedHandler"
+
+**4. Ver eventos acumulados:**
+curl http://localhost:3002/events
+
+---
+
+## 🔄 Fluxo Completo de Criação de Pedido
+Frontend → POST /auth/login
+↓
+
+BFF → Gera token JWT
+↓
+
+Frontend → POST /api/orders (com token)
+↓
+
+BFF → Valida token → Proxy para order-service
+↓
+
+Order-Service → Salva pedido no Azure SQL
+↓
+
+Order-Service → Publica evento ORDER_CREATED
+↓
+
+EventListener → Captura evento
+↓
+
+EventListener → POST para Azure Function
+↓
+
+Azure Function → Processa evento
+├─→ Envia email de confirmação
+├─→ Atualiza analytics
+└─→ Registra log
+↓
+
+BFF → Retorna sucesso para frontend
+
+**Tempo total:** ~50-100ms ⚡
 
 ---
 
@@ -298,12 +431,17 @@ curl http://localhost:4000/api/dashboard
 - JWT (Autenticação)
 - Axios (HTTP Client)
 - Jest (Testes)
+- EventEmitter (Event-Driven)
 
 ### **Frontend:**
 - React 18
 - Vite
 - Axios
 - React Router
+
+### **Serverless:**
+- Azure Functions
+- Azure Functions Core Tools
 
 ### **DevOps:**
 - Docker + Docker Compose
@@ -316,16 +454,19 @@ curl http://localhost:4000/api/dashboard
 - API Gateway Pattern
 - BFF (Backend for Frontend)
 - Microservices Pattern
+- Event-Driven Architecture
+- Serverless Computing
 
 ---
 
 ## 📚 Documentação Adicional
 
-Cada microserviço possui documentação detalhada:
+Cada componente possui documentação detalhada:
 
 - [Product Service Architecture](./product-service/ARCHITECTURE.md)
 - [Order Service Architecture](./order-service/ARCHITECTURE.md)
 - [BFF Service Architecture](./bff-service/ARCHITECTURE.md)
+- [Azure Function Architecture](./azure-function-order-processor/ARCHITECTURE.md)
 
 ---
 
@@ -349,12 +490,24 @@ Cada microserviço possui documentação detalhada:
 - Agregação de dados
 - Redução de requisições do cliente
 
+### **Event-Driven Architecture:**
+- Desacoplamento entre serviços
+- Processamento assíncrono
+- Resiliência e extensibilidade
+- Fácil adicionar novos consumidores de eventos
+
+### **Serverless Computing:**
+- Custo otimizado (pay-per-execution)
+- Escalabilidade automática
+- Zero gerenciamento de infraestrutura
+- Alta disponibilidade
+
 ---
 
 ## 👥 Equipe
 
-- **Nicole Fatuch** - Backend Development & Architecture & Testing
-- **Jose Gabriel Kojo** - Backend Development
+- **Nicole Fatuch** - Backend Development & Architecture & Frontend Development & Testing
+- **Jose Gabriel Kojo** - Backend Development & Testing
 - **Larissa Nichetti** - Documentation
 - **Felipe Brugnera** - 
 - **Maria Fernanda** - 
@@ -367,4 +520,3 @@ Este projeto foi desenvolvido como trabalho acadêmico para a disciplina de Clou
 
 ---
 
-**Desenvolvido com 💚 para PUC-PR | 2025**

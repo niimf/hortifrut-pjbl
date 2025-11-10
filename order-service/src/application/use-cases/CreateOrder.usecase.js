@@ -1,4 +1,6 @@
 const Order = require('../../domain/entities/Order.entity');
+const eventPublisher = require('../../infrastructure/events/EventPublisher');
+
 
 class CreateOrderUseCase {
   constructor(orderRepository) {
@@ -13,6 +15,10 @@ class CreateOrderUseCase {
     });
 
     const savedOrder = await this.orderRepository.create(order);
+  
+    // 🔥 PUBLICAR EVENTO
+    eventPublisher.publishOrderCreated(savedOrder);
+  
     return savedOrder;
   }
 }

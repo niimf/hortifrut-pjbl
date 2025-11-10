@@ -70,5 +70,21 @@ async function startServer() {
     process.exit(1);
   }
 }
+// Event-Driven Architecture
+const EventListener = require('./infrastructure/events/EventListener');
+const eventPublisher = require('./infrastructure/events/EventPublisher');
+
+// Inicializar Event Listener
+const eventListener = new EventListener();
+
+// Adicionar rota para visualizar log de eventos
+app.get('/events', (req, res) => {
+  res.json({
+    success: true,
+    events: eventPublisher.getEventLog(),
+    totalEvents: eventPublisher.getEventLog().length
+  });
+});
+
 
 startServer();
