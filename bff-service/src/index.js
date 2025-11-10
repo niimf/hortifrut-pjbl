@@ -1,17 +1,35 @@
-import express from "express";
-import cors from "cors";
-import dotenv from "dotenv";
-import authRoutes from "./routes/auth.routes.js";
-import apiRoutes from "./routes/api.routes.js";
+require('dotenv').config();
 
-dotenv.config();
+const express = require('express');
+const cors = require('cors');
+
+const routes = require('./presentation/routes');
+const errorHandler = require('./presentation/middlewares/errorHandler');
+
+const PORT = process.env.PORT || 4000;
 const app = express();
+
+// Middlewares
 app.use(cors());
 app.use(express.json());
 
-app.use("/auth", authRoutes);
-app.use("/api", apiRoutes);
-app.get("/health", (_, res) => res.json({ status: "ok" }));
+// Routes
+app.use('/', routes);
 
-const port = process.env.PORT || 4000;
-app.listen(port, () => console.log(`🔐 bff-service rodando na porta ${port}`));
+// Health check
+app.get('/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    service: 'bff-service',
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Error Handler
+app.use(errorHandler);
+
+// Start Server
+app.listen(PORT, () => {
+  console.log(`🚀 BFF Service running on port ${PORT}`);
+  console.log(`📊 Clean Architecture + API Gateway implemented`);
+});

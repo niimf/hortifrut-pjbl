@@ -1,24 +1,74 @@
-import express from "express";
-import cors from "cors";
-import dotenv from "dotenv";
-import orders from "./routes/orders.routes.js";
-import { getPool } from "./config/database.js";
-import fs from "fs";
-import path from "path";
-import url from "url";
+require('dotenv').config();
 
-dotenv.config();
-const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
+const express = require('express');
+const cors = require('cors');
+
+// Infrastructure
+const AzureSQLConnection = require('./infrastructure/database/mssql/connection');
+const OrderRepository = require('./infrastructure/database/mssql/OrderRepository');
+
+// Use Cases
+const CreateOrderUseCase = require('./application/use-cases/CreateOrder.usecase');
+const GetAllOrdersUseCase = require('./application/use-cases/GetAllOrders.usecase');
+const GetOrderByIdUseCase = require('./application/use-cases/GetOrderById.usecase');
+const UpdateOrderUseCase = require('./application/use-cases/UpdateOrder.usecase');
+const DeleteOrderUseCase = require('./application/use-cases/DeleteOrder.usecase');
+
+// Presentation
+const OrderController = require('./presentation/controllers/OrderController');
+const createOrderRoutes = require('./presentation/routes/order.routes');
+const errorHandler = require('./presentation/middlewares/errorHandler');
+
+// Configuração
+const PORT = process.env.PORT || 3002;
 const app = express();
+
+// Middlewares
 app.use(cors());
 app.use(express.json());
-app.use("/orders", orders);
 
-const port = process.env.PORT || 3002;
+// Dependency Injection
+const orderRepository = new OrderRepository();
 
-(async () => {
-  const sql = fs.readFileSync(path.join(__dirname, "db/init.sql"), "utf-8");
-  const pool = await getPool();
-  await pool.request().query(sql);
-  app.listen(port, () => console.log(`🛒 order-service rodando na porta ${port}`));
-})().catch(console.error);
+const createOrderUseCase = new CreateOrderUseCase(orderRepository);
+const getAllOrdersUseCase = new GetAllOrdersUseCase(orderRepository);
+const getOrderByIdUseCase = new GetOrderByIdUseCase(orderRepository);
+const updateOrderUseCase = new UpdateOrderUseCase(orderRepository);
+const deleteOrderUseCase = new DeleteOrderUseCase(orderRepository);
+
+const orderController = new OrderController(
+  createOrderUseCase,
+  getAllOrdersUseCase,
+  getOrderByIdUseCase,
+  updateOrderUseCase,
+  deleteOrderUseCase
+);
+
+// Routes
+const orderRoutes = createOrderRoutes(orderController);
+app.use('/orders', orderRoutes);
+
+// Health check
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok', service: 'order-service' });
+});
+
+// Error Handler
+app.use(errorHandler);
+
+// Start Server
+async function startServer() {
+  try {
+    await AzureSQLConnection.connect();
+    
+    app.listen(PORT, () => {
+      console.log(`🚀 Order Service running on port ${PORT}`);
+      console.log(`📊 Clean Architecture implemented`);
+    });
+  } catch (error) {
+    console.error('Failed to start server:', error);
+    process.exit(1);
+  }
+}
+
+startServer();
