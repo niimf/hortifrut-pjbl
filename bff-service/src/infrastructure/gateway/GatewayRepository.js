@@ -6,6 +6,7 @@ class GatewayRepository extends IGatewayRepository {
     super();
     this.productServiceUrl = process.env.PRODUCT_SERVICE_URL || 'http://localhost:3001';
     this.orderServiceUrl = process.env.ORDER_SERVICE_URL || 'http://localhost:3002';
+    this.azureFunctionUrl = process.env.AZURE_FUNCTION_URL || 'http://127.0.0.1:7071';
   }
 
   async getProducts(token) {
@@ -47,6 +48,23 @@ class GatewayRepository extends IGatewayRepository {
 
   async getDashboard(token) {
     try {
+      // Verificar status da Azure Function
+      let functionStatus = { ok: false, message: 'unavailable' };
+      try {
+        const azureResponse = await axios.get(`${this.azureFunctionUrl}/api/OrderCreatedHandler`, {
+          timeout: 2000,
+          validateStatus: () => true // Aceita qualquer status
+        });
+        functionStatus = {
+          ok: azureResponse.status >= 200 && azureResponse.status < 500, // Qualquer resposta válida (2xx, 3xx, 4xx)
+          message: 'available'
+        };
+      } catch (azureError) {
+        console.log('Azure Function unavailable:', azureError.message);
+        functionStatus = { ok: false, message: 'unavailable' };
+      }
+
+      // Buscar produtos e pedidos
       const [products, orders] = await Promise.all([
         this.getProducts(token),
         this.getOrders(token)
@@ -55,6 +73,7 @@ class GatewayRepository extends IGatewayRepository {
       return {
         products,
         orders,
+        functionStatus,
         summary: {
           totalProducts: Array.isArray(products) ? products.length : 0,
           totalOrders: Array.isArray(orders) ? orders.length : 0
@@ -62,7 +81,12 @@ class GatewayRepository extends IGatewayRepository {
       };
     } catch (error) {
       console.error('Error fetching dashboard:', error.message);
-      return { products: [], orders: [], summary: {} };
+      return {
+        products: [],
+        orders: [],
+        functionStatus: { ok: false, message: 'unavailable' },
+        summary: {}
+      };
     }
   }
 }
