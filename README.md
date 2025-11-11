@@ -1,8 +1,8 @@
-# 🍎 Hortifrut - Sistema de Gestão de Hortifrutigranjeiros
+# 🍎 Hortifrut - Sistema de Gestão de Hortifruti
 
 **Autores:** Nicole Fatuch, Jose Gabriel Kojo, Larissa Nichetti, Felipe Brugnera, Maria Fernanda  
 **Disciplina:** Cloud - PUC-PR  
-**Professor:** Manuel  
+**Professor:** Manoel  
 **Data:** Novembro 2025
 
 ---
