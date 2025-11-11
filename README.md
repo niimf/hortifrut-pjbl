@@ -509,7 +509,7 @@ Cada componente possui documentação detalhada:
 - **Nicole Fatuch** - Backend Development & Architecture & Frontend Development & Testing
 - **Jose Gabriel Kojo** - Backend Development & Testing
 - **Larissa Nichetti** - Documentation
-- **Felipe Brugnera** - 
+- **Felipe Brugnera** - Support with Documentation
 - **Maria Fernanda** - 
 
 ---
